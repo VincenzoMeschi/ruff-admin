@@ -4,16 +4,18 @@
 	align-items: left;
 	width: 60%;
 	background: #f2f2f2;
-	padding: 20px;
+	padding: 20px 0;
 	margin: 20px;
 	border-radius: 5px;
-	// I want the height of the box to be fixed and the content to scroll
 	overflow: scroll;
 	height: 90vh;
 
 	h2 {
 		font-size: 1.5rem;
 		margin-bottom: 1rem;
+		border-bottom: 2px solid #ccc;
+		padding-bottom: 2rem;
+		padding-left: 20px;
 	}
 	ul {
 		list-style: none;

@@ -1,0 +1,44 @@
+.addMovieBlock {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 40%;
+	background: #f2f2f2;
+	padding: 20px 0;
+	margin: 20px;
+	border-radius: 5px;
+	overflow: scroll;
+	height: 90vh;
+
+	h2 {
+		font-size: 1.5rem;
+		margin-bottom: 1rem;
+		border-bottom: 2px solid #ccc;
+		padding-bottom: 2rem;
+		padding-left: 50px;
+		width: 100%;
+	}
+	.uploadNewMovie {
+		display: flex;
+		flex-direction: column;
+		align-items: left;
+		width: 90%;
+		padding: 20px;
+		// Format th movie items to give the ample amout of space for eachother
+		// Image should not be big
+		// Title should be single line and big
+		// Description should be multiline large
+		// Year, Genere should be on the same row
+		// Limit and series should be on the same row
+		// Uplaod button is by itseelf
+		.uploadMovieItem {
+			display: grid;
+			grid-template-columns: 1fr 3fr;
+			grid-gap: 10px;
+			margin-bottom: 1rem;
+			textarea {
+				height: 100px;
+			}
+		}
+	}
+}
