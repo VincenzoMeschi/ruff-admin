@@ -1,0 +1,8 @@
+// Sidebar takes up 20% of the left side of the screen.. this page should take up the area to the right of the sidebar
+
+.pageContainer {
+	display: flex;
+	width: 80%;
+	margin-left: 20%;
+	height: 100%;
+}

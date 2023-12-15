@@ -1,0 +1,23 @@
+.movielist {
+	display: flex;
+	flex-direction: column;
+	align-items: left;
+	width: 60%;
+	background: #f2f2f2;
+	padding: 20px;
+	margin: 20px;
+	border-radius: 5px;
+	// I want the height of the box to be fixed and the content to scroll
+	overflow: scroll;
+	height: 90vh;
+
+	h2 {
+		font-size: 1.5rem;
+		margin-bottom: 1rem;
+	}
+	ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+}

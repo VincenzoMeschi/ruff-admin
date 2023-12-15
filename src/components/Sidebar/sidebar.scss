@@ -1,0 +1,16 @@
+.sidebar {
+	background-color: #f3f3f3;
+	border-right: 1px solid #808080;
+	box-shadow: 0 0 10px rgba(249, 227, 227, 0.1);
+	height: 100%;
+	left: 0;
+	overflow-y: auto;
+	position: fixed;
+	top: 0;
+	width: 20%;
+	z-index: 1000;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
