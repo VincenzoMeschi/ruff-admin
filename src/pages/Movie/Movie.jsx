@@ -1,6 +1,5 @@
 import AddMovie from "../../components/AddMovie/AddMovie";
 import MovieList from "../../components/MovieList/MovieList";
-
 import "./movie.scss";
 
 const Movie = () => {

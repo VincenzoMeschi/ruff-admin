@@ -1,11 +1,15 @@
 import "./addmovie.scss";
 const AddMovie = () => {
-	return <div className="addMovieBlock">
+	return (<div className="addMovieBlock">
 		<h2>Add New Movie</h2>
 		<form action="#" className="uploadNewMovie">
 			<div className="uploadMovieItem">
 				<label htmlFor="file">Image</label>
 				<input type="file" name="file" id="file" />
+			</div>
+			<div className="uploadMovieItem">
+				<label htmlFor="video">Video</label>
+				<input type="file" name="video" id="video" />
 			</div>
 			<div className="uploadMovieItem">
 				<label htmlFor="title">Title</label>
@@ -34,9 +38,9 @@ const AddMovie = () => {
 					<option value="true">Yes</option>
 				</select>
 			</div>
-			<button className="uploadButton">Upload</button>
+			<button className="uploadButton">Add Movie</button>
 		</form>
-	</div>;
+	</div>);
 };
 
 export default AddMovie;

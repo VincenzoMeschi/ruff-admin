@@ -1,0 +1,42 @@
+.listListItem {
+	display: flex;
+	flex-direction: column;
+	padding: 1rem;
+	border-top: 2px solid #fff;
+	h3 {
+		font-size: 1.2rem;
+		align-items: left;
+		width: 75%;
+	}
+	ul {
+		display: flex;
+		overflow: scroll;
+		.listListMovieItem {
+			display: flex;
+			flex-direction: column;
+			padding: 0 1rem;
+			&:hover {
+				cursor: pointer;
+			}
+			img {
+				height: 300px;
+				width: auto;
+				object-fit: cover;
+			}
+			h5 {
+				font-size: 1rem;
+				margin: 0.5rem 0;
+			}
+		}
+	}
+	.modifyButtons {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		width: 20%;
+		button {
+			width: 100%;
+			margin: 0.5rem 0;
+		}
+	}
+}

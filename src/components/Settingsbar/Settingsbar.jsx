@@ -1,9 +1,15 @@
 import ProfilePicture from "../../assets/Example_Profile_Image.png";
 import LogoutIcon from "@mui/icons-material/Logout";
 import "./settingsbar.scss";
-import Logout from "@mui/icons-material/Logout";
+import { authLogout } from "../../auth/auth";
 
 const Settingsbar = () => {
+
+	const handleLogout = () => {
+		authLogout();
+	};
+
+
 	return (
 		<div className="settingsbar">
 			<ul>
@@ -14,7 +20,7 @@ const Settingsbar = () => {
 				</li>
 				<li>
 					<LogoutIcon className="icon" />
-					<a href="#">Logout</a>
+					<button onClick={handleLogout}>Logout</button>
 				</li>
 			</ul>
 		</div>

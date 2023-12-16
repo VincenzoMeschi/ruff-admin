@@ -4,6 +4,9 @@ import Settingsbar from "../Settingsbar/Settingsbar";
 import "./sidebar.scss";
 
 const Sidebar = () => {
+	
+
+
 	return (
 		<div className="sidebar">
 			<Logobar />
