@@ -57,6 +57,7 @@ export default function SignIn() {
 					"authorization",
 					"Bearer " + res.data.accessToken
 				);
+				window.localStorage.setItem("userId", res.data._id);
 				window.location.href = "/admin";
 			} else {
 				handleIncorrectLogin({
