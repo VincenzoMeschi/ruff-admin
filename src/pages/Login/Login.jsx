@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Alert, Collapse } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { authLogin } from "../../auth/auth";
 
 function Copyright(props) {
@@ -35,17 +35,34 @@ export default function SignIn() {
 	const [countAttempts, setCountAttemps] = useState(0);
 	const [resMessage, setResMessage] = useState("");
 
+	useEffect(() => {
+		if (countAttempts > 0) {
+			setTimeout(() => {
+				setIncorrectLogin(false);
+			}, 15000);
+		}
+		// clear password field & focus it
+		document.getElementById("password").value = "";
+		document.getElementById("password").focus();
+	}, [countAttempts]);
+
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		const data = new FormData(event.currentTarget);
 
 		const handleCorrectLogin = (res) => {
-			setIncorrectLogin(false);
-			window.localStorage.setItem(
-				"authorization",
-				"Bearer " + res.data.accessToken
-			);
-			window.location.href = "/admin";
+			if (res.data.isAdmin) {
+				setIncorrectLogin(false);
+				window.localStorage.setItem(
+					"authorization",
+					"Bearer " + res.data.accessToken
+				);
+				window.location.href = "/admin";
+			} else {
+				handleIncorrectLogin({
+					response: { data: "You are not an admin!" },
+				});
+			}
 		};
 		const handleIncorrectLogin = (err) => {
 			setIncorrectLogin(true);

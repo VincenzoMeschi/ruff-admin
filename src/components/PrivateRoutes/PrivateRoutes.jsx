@@ -3,14 +3,14 @@ import Sidebar from "../Sidebar/Sidebar";
 import "./privateRoutes.scss";
 import Loading from "../../pages/Loading/Loading";
 import { useEffect, useState } from "react";
-import { authCheck } from "../../auth/auth";
+import { authGetCurrentUserInfo } from "../../auth/auth";
 
 const PrivateRoutes = () => {
 	const [auth, setAuth] = useState(null);
 
 	useEffect(() => {
 		const checkAuth = async () => {
-			const isAuthenticated = await authCheck();
+			const isAuthenticated = await authGetCurrentUserInfo();
 			setAuth(isAuthenticated);
 		};
 

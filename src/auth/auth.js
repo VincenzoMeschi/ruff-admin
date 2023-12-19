@@ -24,16 +24,18 @@ export const authLogout = () => {
 	window.location.href = "/admin/login";
 };
 
-export const authCheck = async () => {
+export const authGetCurrentUserInfo = async () => {
 	try {
-		console.log("TRIED");
 		const response = await axios.get("http://localhost:8080/api/auth", {
 			headers: {
 				authorization: window.localStorage.getItem("authorization"),
 			},
-		});           
+		});
 
-		return response.status === 200;
+		// deconstruct password from response
+		const { password, ...data } = response.data;
+
+		return data;
 	} catch (error) {
 		console.log(error);
 		return false;
