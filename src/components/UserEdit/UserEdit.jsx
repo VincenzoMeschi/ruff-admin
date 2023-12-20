@@ -95,7 +95,6 @@ const UserEdit = (props) => {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setFetchingData(true);
-		// Make statelessFormData equal to all formdata that has been changed by the user
 		const statelessFormData = {};
 
 		Object.keys(formData).forEach((key) => {
