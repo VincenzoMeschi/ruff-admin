@@ -3,14 +3,13 @@ import "./settingsbar.scss";
 import { authLogout } from "../../auth/auth";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Loading from "../../pages/Loading/Loading";
 
 const Settingsbar = () => {
 	const [userLoggedIn, setUserLoggedIn] = useState(null);
 
 	useEffect(() => {
 		const userId = window.localStorage.getItem("userId");
-		// make get request with axios to backend and get user data using the username or email from localstorage
-		// set userLoggedIn to the user data
 		axios
 			.get("http://localhost:8080/api/users/find/" + userId, {
 				headers: {
@@ -29,13 +28,14 @@ const Settingsbar = () => {
 		authLogout();
 	};
 
-	console.log(userLoggedIn);
+	if (userLoggedIn === null) {
+		return <Loading />;
+	}
 
 	return (
 		<div className="settingsbar">
 			<ul>
 				<li>
-					{/* Logged in user with image and name */}
 					<img src={userLoggedIn.profilePic} alt="profile" />
 					<span>{userLoggedIn.username}</span>
 				</li>

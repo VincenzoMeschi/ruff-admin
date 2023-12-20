@@ -1,14 +1,28 @@
 import "./userlistitem.scss";
 
-const UserListItem = ({ img, username }) => {
+const UserListItem = (props) => {
+	const handleEdit = () => {
+		props.setShowEdit(true);
+		props.setEditedUser(props.id);
+		props.setReady(true)
+	};
+
+	const handleDelete = () => {
+		props.onUserDelete(props.id);
+		props.setDeletedUser(props.id);
+	};
 
 	return (
 		<li className="userListItem">
-			<img src={img} alt="" />
-			<h3>{username}</h3>
+			<img src={props.img} alt="" />
+			<h3>{props.username}</h3>
 			<div className="modifyButtons">
-				<button className="edit">Edit</button>
-				<button className="delete">Delete</button>
+				<button className="edit" onClick={handleEdit}>
+					Edit
+				</button>
+				<button onClick={handleDelete} className="delete">
+					Delete
+				</button>
 			</div>
 		</li>
 	);

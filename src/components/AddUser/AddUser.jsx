@@ -3,7 +3,7 @@ import { useState } from "react";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import axios from "axios";
 
-const AddUser = () => {
+const AddUser = (props) => {
 	const [formData, setFormData] = useState({
 		profilePic: "",
 		username: "",
@@ -11,6 +11,8 @@ const AddUser = () => {
 		password: "",
 		isAdmin: false,
 	});
+
+	const baseURL = "http://localhost:8080/api/users/admin/create/user";
 
 	const generateImage = (name) => {
 		return (
@@ -21,12 +23,13 @@ const AddUser = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		let userObj;
 
 		const statelessFormData = { ...formData };
 
-		const apiCall = async (data) => {
-			const baseURL = "http://localhost:8080/api/users/admin/create/user";
 
+
+		const apiCall = async (data) => {
 			const config = {
 				headers: {
 					authorization: window.localStorage.getItem("authorization"),
@@ -35,7 +38,6 @@ const AddUser = () => {
 			console.log(data);
 			try {
 				const res = await axios.post(baseURL, data, config);
-				console.log(res);
 				setFormData({
 					profilePic: "",
 					username: "",
@@ -44,6 +46,7 @@ const AddUser = () => {
 					isAdmin: false,
 				});
 				alert("User Added!");
+				return res;
 			} catch (err) {
 				console.log("Error during API call: " + err);
 			}
@@ -58,15 +61,19 @@ const AddUser = () => {
 				.then(() => {
 					getDownloadURL(storageRef).then((url) => {
 						statelessFormData.profilePic = url;
-						return apiCall(statelessFormData);
+						userObj = apiCall(statelessFormData).then((res) =>
+							props.onNewUserAdded(res.data)
+						);
+						return userObj;
 					});
 				})
-				.catch((err) =>
-					console.log("OLIVIASDASKLHNFLASUHFLAHSF" + err)
-				);
+				.catch((err) => console.log(err));
 		} else {
-			statelessFormData.profilePic = generateImage(statelessFormData.username);
+			statelessFormData.profilePic = generateImage(
+				statelessFormData.username
+			);
 			apiCall(statelessFormData)
+				.then((res) => props.onNewUserAdded(res.data))
 				.then(
 					setFormData({
 						profilePic: "",
