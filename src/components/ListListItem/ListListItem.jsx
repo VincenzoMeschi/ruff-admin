@@ -1,10 +1,9 @@
-// import movies from "../../data/movielist";
 import "./listlistitem.scss";
-import placeholder from "../../assets/Unknown_Movie.png";
 
 const ListListItem = (props) => {
 	const handleImageError = (e) => {
-		e.target.src = placeholder;
+		e.target.src =
+			"https://firebasestorage.googleapis.com/v0/b/ruff-3fe3b.appspot.com/o/site_assets%2FUnknown_Movie.png?alt=media&token=4f0f6be1-012e-478d-86cf-14ca739b70f0";
 	};
 
 	const handleEdit = () => {
