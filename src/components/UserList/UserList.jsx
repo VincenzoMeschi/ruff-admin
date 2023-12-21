@@ -4,6 +4,7 @@ import "./userlist.scss";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import UserEdit from "../UserEdit/UserEdit";
+import Loading from "../../pages/Loading/Loading";
 
 const baseURL = "http://localhost:8080/api/users";
 
@@ -20,14 +21,18 @@ const UserList = (props) => {
 	const [showEdit, setShowEdit] = useState(false);
 	const [ready, setReady] = useState(false);
 	const [updatedUserInfo, setUpdatedUserInfo] = useState(null);
+	const [fetchingData, setFetchingData] = useState(false);
 
 	useEffect(() => {
 		const getUsers = async () => {
 			try {
+				setFetchingData(true);
 				const res = await axios.get(baseURL, config);
 				setUsers(res.data);
+				setFetchingData(false);
 			} catch (err) {
 				console.log(err.response.data);
+				setFetchingData(false);
 			}
 		};
 		getUsers();
@@ -66,6 +71,10 @@ const UserList = (props) => {
 			);
 		}
 	}, [updatedUserInfo]);
+
+	if (fetchingData) {
+		return <Loading />;
+	}
 
 	return (
 		<div className="userList">

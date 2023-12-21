@@ -4,6 +4,7 @@ import MovieEdit from "../MovieEdit/MovieEdit";
 // import movies from "../../data/movielist";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Loading from "../../pages/Loading/Loading";
 
 const baseURL = "http://localhost:8080/api/movies";
 
@@ -20,14 +21,18 @@ const MovieList = (props) => {
 	const [showEdit, setShowEdit] = useState(false);
 	const [ready, setReady] = useState(false);
 	const [updatedMovieInfo, setUpdatedMovieInfo] = useState(null);
+	const [fetchingData, setFetchingData] = useState(false);
 
 	// Get Movies and update state
 	useEffect(() => {
 		const getMovies = async () => {
+			setFetchingData(true);
 			try {
 				const res = await axios.get(baseURL, config);
 				setMovies(res.data);
+				setFetchingData(false);
 			} catch (err) {
+				setFetchingData(false);
 				console.log(err.response.data);
 			}
 		};
@@ -44,7 +49,7 @@ const MovieList = (props) => {
 		}
 	}, [props.newMovies]);
 
-	// remove deleted movie from movies
+	// remove deleted movie from movies and firebase
 	useEffect(() => {
 		if (deletedMovie) {
 			setMovies((prevMovies) =>
@@ -66,6 +71,10 @@ const MovieList = (props) => {
 			);
 		}
 	}, [updatedMovieInfo]);
+
+	if (fetchingData) {
+		return <Loading />;
+	}
 
 	return (
 		<div className="movielist">

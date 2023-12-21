@@ -35,7 +35,6 @@ const AddMovie = (props) => {
 					authorization: window.localStorage.getItem("authorization"),
 				},
 			};
-			console.log(data);
 			try {
 				const res = await axios.post(baseURL, data, config);
 				setFormData({
