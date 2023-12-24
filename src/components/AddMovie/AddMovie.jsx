@@ -11,6 +11,7 @@ const AddMovie = (props) => {
 		title: "",
 		desc: "",
 		year: "",
+		preview: "",
 		genre: "",
 		limit: "",
 		isSeries: false,
@@ -42,6 +43,7 @@ const AddMovie = (props) => {
 					video: "",
 					title: "",
 					desc: "",
+					preview: "",
 					year: "",
 					genre: "",
 					limit: "",
@@ -62,7 +64,7 @@ const AddMovie = (props) => {
 			}_${Date.now()}.${formData.img.name.split(".").pop()}`;
 			const file = formData.img;
 			const storage = getStorage();
-			const storageRef = ref(storage, `movie_images/${newFileName}`);
+			const storageRef = ref(storage, `posters/${newFileName}`);
 
 			uploadBytes(storageRef, file)
 				.then(() => {
@@ -84,9 +86,38 @@ const AddMovie = (props) => {
 								.then(() => {
 									getDownloadURL(storageRef2).then((url) => {
 										statelessFormData.video = url;
-										apiCall(statelessFormData).then((res) =>
-											props.onNewMovieAdded(res.data)
-										);
+										if (formData.preview instanceof File) {
+											const newFileName = `${
+												formData.title
+											}_${Date.now()}.${formData.preview.name
+												.split(".")
+												.pop()}`;
+											const file = formData.preview;
+											const storageRef3 = ref(
+												storage,
+												`previews/${newFileName}`
+											);
+
+											uploadBytes(storageRef3, file)
+												.then(() => {
+													getDownloadURL(
+														storageRef3
+													).then((url) => {
+														statelessFormData.preview =
+															url;
+														apiCall(
+															statelessFormData
+														).then((res) =>
+															props.onNewMovieAdded(
+																res.data
+															)
+														);
+													});
+												})
+												.catch((err) => {
+													console.log(err);
+												});
+										}
 									});
 								})
 								.catch((err) => {
@@ -137,6 +168,23 @@ const AddMovie = (props) => {
 		}
 	};
 
+	const handlePreview = (e) => {
+		let file = e.target.files[0];
+		const fileType = file.type;
+		const fileSize = file.size;
+		const validTypes = ["video/mp4"];
+		const validSize = 50000000;
+
+		if (validTypes.includes(fileType) && fileSize < validSize) {
+			setFormData({
+				...formData,
+				preview: file,
+			});
+		} else {
+			alert("Please select a valid video file (.mp4)");
+		}
+	};
+
 	return (
 		<div className="addMovieBlock">
 			<h2>Add New Movie</h2>
@@ -160,6 +208,15 @@ const AddMovie = (props) => {
 						name="video"
 						id="video"
 						onChange={handleVideo}
+					/>
+				</div>
+				<div className="uploadMovieItem">
+					<label htmlFor="preview">Preview</label>
+					<input
+						type="file"
+						name="preview"
+						id="preview"
+						onChange={handlePreview}
 					/>
 				</div>
 				<div className="uploadMovieItem">

@@ -16,6 +16,7 @@ const MovieEdit = (props) => {
 		video: "",
 		title: "",
 		desc: "",
+		preview: "",
 		year: "",
 		genre: "",
 		limit: "",
@@ -43,6 +44,7 @@ const MovieEdit = (props) => {
 							video: res.data.video,
 							title: res.data.title,
 							desc: res.data.desc,
+							preview: res.data.preview,
 							year: res.data.year,
 							genre: res.data.genre,
 							limit: res.data.limit,
@@ -207,6 +209,38 @@ const MovieEdit = (props) => {
 		} else {
 			apiCall(statelessFormData);
 		}
+
+		if (formData.preview instanceof File) {
+			const previewRef = ref(
+				storage,
+				extractPath(originalData.preview, "previews")
+			);
+
+			deleteObject(previewRef)
+				.then(() => {
+					console.log("Preview Deleted");
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+
+			// upload new preview
+			const newFileName = `${
+				formData.title
+			}_${Date.now()}.${formData.preview.name.split(".").pop()}`;
+			const file = formData.preview;
+			const storageRef = ref(storage, `previews/${newFileName}`);
+			uploadBytes(storageRef, file)
+				.then(() => {
+					getDownloadURL(storageRef).then((url) => {
+						statelessFormData.preview = url;
+						apiCall(statelessFormData);
+					});
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		}
 	};
 
 	const handleFile = (e) => {
@@ -243,6 +277,23 @@ const MovieEdit = (props) => {
 		}
 	};
 
+	const handlePreview = (e) => {
+		let file = e.target.files[0];
+		const fileType = file.type;
+		const fileSize = file.size;
+		const validTypes = ["video/mp4"];
+		const validSize = 50000000;
+
+		if (validTypes.includes(fileType) && fileSize < validSize) {
+			setFormData({
+				...formData,
+				preview: file,
+			});
+		} else {
+			alert("File must be .mp4 and under 50MB");
+		}
+	};
+
 	const handleClose = () => {
 		props.setShowEdit(false);
 
@@ -251,6 +302,7 @@ const MovieEdit = (props) => {
 			video: "",
 			title: "",
 			desc: "",
+			preview: "",
 			year: "",
 			genre: "",
 			limit: "",
@@ -288,6 +340,15 @@ const MovieEdit = (props) => {
 							name="video"
 							id="video"
 							onChange={handleVideo}
+						/>
+					</div>
+					<div className="uploadMovieItem">
+						<label htmlFor="preview">Preview</label>
+						<input
+							type="file"
+							name="preview"
+							id="preview"
+							onChange={handlePreview}
 						/>
 					</div>
 					<div className="uploadMovieItem">
