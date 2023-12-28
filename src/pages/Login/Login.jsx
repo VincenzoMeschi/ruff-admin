@@ -58,7 +58,7 @@ export default function SignIn() {
 					"Bearer " + res.data.accessToken
 				);
 				window.localStorage.setItem("userId", res.data._id);
-				window.location.href = "/admin";
+				window.location.href = "/";
 			} else {
 				handleIncorrectLogin({
 					response: { data: "You are not an admin!" },
