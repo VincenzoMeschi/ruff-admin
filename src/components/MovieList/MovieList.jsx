@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Loading from "../../pages/Loading/Loading";
 
-const baseURL = "http://localhost:8080/api/movies";
+const baseURL = "https://api.rufftv.com/api/movies";
 
 const config = {
 	headers: {
@@ -49,7 +49,7 @@ const MovieList = (props) => {
 		}
 	}, [props.newMovies]);
 
-	// remove deleted movie from movies and firebase
+	// remove deleted movie from movies
 	useEffect(() => {
 		if (deletedMovie) {
 			setMovies((prevMovies) =>

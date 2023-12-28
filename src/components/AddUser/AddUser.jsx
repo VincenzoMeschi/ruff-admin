@@ -1,7 +1,7 @@
 import "./adduser.scss";
 import { useState } from "react";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import axios from "axios";
+import Loading from "../../pages/Loading/Loading";
 
 const AddUser = (props) => {
 	const [formData, setFormData] = useState({
@@ -12,7 +12,9 @@ const AddUser = (props) => {
 		isAdmin: false,
 	});
 
-	const baseURL = "http://localhost:8080/api/users/admin/create/user";
+	const [fetchingData, setFetchingData] = useState(false);
+
+	const baseURL = "https://api.rufftv.com/api/users/admin/create/user";
 
 	const generateImage = (name) => {
 		return (
@@ -23,11 +25,8 @@ const AddUser = (props) => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		let userObj;
-
+		setFetchingData(true);
 		const statelessFormData = { ...formData };
-
-
 
 		const apiCall = async (data) => {
 			const config = {
@@ -46,45 +45,43 @@ const AddUser = (props) => {
 					isAdmin: false,
 				});
 				alert("User Added!");
+				setFetchingData(false);
 				return res;
 			} catch (err) {
+				setFetchingData(false);
 				console.log("Error during API call: " + err);
 			}
 		};
 
 		if (formData.profilePic instanceof File) {
-			const file = formData.profilePic;
-			const storage = getStorage();
-			const storageRef = ref(storage, file.name);
-
-			uploadBytes(storageRef, file)
-				.then(() => {
-					getDownloadURL(storageRef).then((url) => {
-						statelessFormData.profilePic = url;
-						userObj = apiCall(statelessFormData).then((res) =>
-							props.onNewUserAdded(res.data)
-						);
-						return userObj;
-					});
+			// Get Secure URL from Server
+			const uploadURL = await axios.get(
+				`https://api.rufftv.com/api/auth/s3/url/profile_images/${
+					statelessFormData.username
+				}.${statelessFormData.profilePic.type.split("/")[1]}`
+			);
+			// PUT image to S3
+			await axios
+				.put(uploadURL, statelessFormData.profilePic, {
+					headers: {
+						"Content-Type": statelessFormData.profilePic.type,
+						"authorization":
+							window.localStorage.getItem("authorization"),
+					},
 				})
-				.catch((err) => console.log(err));
+				.then(() => {
+					// POST new Image CDN URL to server
+					statelessFormData.profilePic = `https://d34me5uwzdrtz6.cloudfront.net/profile_images/${
+						statelessFormData.username
+					}.${statelessFormData.profilePic.type.split("/")[1]}`;
+				});
+
+			await apiCall(statelessFormData);
 		} else {
 			statelessFormData.profilePic = generateImage(
 				statelessFormData.username
 			);
-			apiCall(statelessFormData)
-				.then((res) => props.onNewUserAdded(res.data))
-				.then(
-					setFormData({
-						profilePic: "",
-						username: "",
-						email: "",
-						password: "",
-						isAdmin: false,
-					})
-				)
-				.then(alert("User Added!"))
-				.catch((err) => console.log(err));
+			await apiCall(statelessFormData);
 		}
 	};
 

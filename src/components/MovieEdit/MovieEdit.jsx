@@ -1,12 +1,5 @@
 import "./movieEdit.scss";
 import { useEffect, useState } from "react";
-import {
-	getDownloadURL,
-	getStorage,
-	ref,
-	uploadBytes,
-	deleteObject,
-} from "firebase/storage";
 import axios from "axios";
 import Loading from "../../pages/Loading/Loading";
 
@@ -29,7 +22,7 @@ const MovieEdit = (props) => {
 		const apiCall = () => {
 			setFetchingData(true);
 			const baseURL =
-				"http://localhost:8080/api/movies/find/" + props.editedMovie;
+				"https://api.rufftv.com/api/movies/find/" + props.editedMovie;
 			const config = {
 				headers: {
 					authorization: localStorage.getItem("authorization"),
@@ -56,7 +49,6 @@ const MovieEdit = (props) => {
 					.then(() => setFetchingData(false));
 			} catch (err) {
 				setFetchingData(false);
-				console.log("YOU CANT DO THAT");
 			}
 		};
 
@@ -73,37 +65,9 @@ const MovieEdit = (props) => {
 		return <Loading />;
 	}
 
-	const extractPath = (url, folderName) => {
-		const domain = "https://firebasestorage.googleapis.com/v0/b/";
-		const queryParamsIndex = url.indexOf("?");
-		const bucketPathIndex = url.indexOf("/o/");
-
-		if (
-			url.startsWith(domain) &&
-			queryParamsIndex !== -1 &&
-			bucketPathIndex !== -1
-		) {
-			const bucketName = url.slice(domain.length, bucketPathIndex);
-			let fileName = decodeURIComponent(
-				url.slice(bucketPathIndex + 3, queryParamsIndex)
-			);
-
-			// Ensure 'movies/' is only added once
-			const folderPath = `${folderName}/`;
-			if (!fileName.startsWith(folderPath)) {
-				fileName = folderPath + fileName;
-			}
-
-			return `gs://${bucketName}/${fileName}`;
-		} else {
-			throw new Error("Invalid Firebase Storage URL");
-		}
-	};
-
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setFetchingData(true);
-
 		const statelessFormData = {};
 
 		Object.keys(formData).forEach((key) => {
@@ -119,7 +83,7 @@ const MovieEdit = (props) => {
 				},
 			};
 			const baseURL =
-				"http://localhost:8080/api/movies/find/" + props.editedMovie;
+				"https://api.rufftv.com/api/movies/find/" + props.editedMovie;
 			console.log(data);
 			try {
 				axios.put(baseURL, data, config).then((res) => {
@@ -134,113 +98,96 @@ const MovieEdit = (props) => {
 			return;
 		};
 
-		const storage = getStorage();
-
 		if (formData.img instanceof File) {
-			if (
-				!originalData.img.includes(
-					"https://firebasestorage.googleapis.com/v0/b/ruff-3fe3b.appspot.com/o/movie_posters%2FUnknown_Movie.png?alt=media&token=de715e3e-0cf2-4df5-9553-d9466172d8b4"
-				)
-			) {
-				const imgRef = ref(
-					storage,
-					extractPath(originalData.img, "movie_posters")
+			// If title has changed, delete old img
+			if (statelessFormData.title) {
+				// get the filetype from img url (split from the last occurace of ".")
+				const lastIndex = originalData.img.lastIndexOf(".");
+
+				const deleteURL = await axios.get(
+					`https://api.rufftv.com/api/auth/s3/delete/movie_posters/${originalData.img.substr(
+						lastIndex + 1
+					)}`
 				);
 
-				deleteObject(imgRef)
-					.then(() => {
-						console.log("Poster Deleted");
-					})
-					.catch((err) => {
-						console.log(err);
-					});
+				await axios.delete(deleteURL, {
+					headers: {
+						"Content-Type": formData.img.type,
+						"authorization":
+							window.localStorage.getItem("authorization"),
+					},
+				});
 			}
 
-			// upload new poster
-			const newFileName = `${
+			// Get Secure URL from Server
+
+			const uploadURL = await axios.get(
+				`https://api.rufftv.com/api/auth/s3/url/movie_posters/${
+					formData.title
+				}.${formData.img.type.split("/")[1]}`
+			);
+
+			// Upload Image to S3
+			await axios.put(uploadURL.data, formData.img, {
+				headers: {
+					"Content-Type": formData.img.type,
+					"authorization":
+						window.localStorage.getItem("authorization"),
+				},
+			});
+
+			// Update img in statelessFormData
+			statelessFormData.img = `https://d34me5uwzdrtz6.cloudfront.net/movie_posters/${
 				formData.title
-			}_${Date.now()}.${formData.img.name.split(".").pop()}`;
-			const file = formData.img;
-			const storageRef = ref(storage, `movie_posters/${newFileName}`);
-			uploadBytes(storageRef, file)
-				.then(() => {
-					getDownloadURL(storageRef).then((url) => {
-						statelessFormData.img = url;
-						apiCall(statelessFormData);
-					});
-				})
-				.catch((err) => {
-					console.log(err);
-				});
-		} else {
-			apiCall(statelessFormData);
+			}.${formData.img.type.split("/")[1]}`;
 		}
 
 		if (formData.video instanceof File) {
-			const videoRef = ref(
-				storage,
-				extractPath(originalData.video, "movies")
+			// If title has changed, delete old video
+			if (statelessFormData.title) {
+				// get the filetype from video url (split from the last occurace of ".")
+				const lastIndex = originalData.video.lastIndexOf(".");
+
+				const deleteURL = await axios.get(
+					`https://api.rufftv.com/api/auth/s3/delete/movies/${originalData.video.substr(
+						lastIndex + 1
+					)}`
+				);
+
+				await axios.delete(deleteURL, {
+					headers: {
+						"Content-Type": formData.video.type,
+						"authorization":
+							window.localStorage.getItem("authorization"),
+					},
+				});
+			}
+
+			// Get Secure URL from Server
+
+			const uploadURL = await axios.get(
+				`https://api.rufftv.com/api/auth/s3/url/movies/${
+					formData.title
+				}.${formData.video.type.split("/")[1]}`
 			);
 
-			deleteObject(videoRef)
-				.then(() => {
-					console.log("Video Deleted");
-				})
-				.catch((err) => {
-					console.log(err);
-				});
+			// Upload Image to S3
+			await axios.put(uploadURL.data, formData.video, {
+				headers: {
+					"Content-Type": formData.video.type,
+					"authorization":
+						window.localStorage.getItem("authorization"),
+				},
+			});
 
-			// upload new video
-			const newFileName = `${
+			// Update video in statelessFormData
+			statelessFormData.video = `https://d34me5uwzdrtz6.cloudfront.net/movies/full_trailer/${
 				formData.title
-			}_${Date.now()}.${formData.video.name.split(".").pop()}`;
-			const file = formData.video;
-			const storageRef = ref(storage, `movies/${newFileName}`);
-			uploadBytes(storageRef, file)
-				.then(() => {
-					getDownloadURL(storageRef).then((url) => {
-						statelessFormData.video = url;
-						apiCall(statelessFormData);
-					});
-				})
-				.catch((err) => {
-					console.log(err);
-				});
-		} else {
-			apiCall(statelessFormData);
+			}.${formData.video.type.split("/")[1]}`;
 		}
 
-		if (formData.preview instanceof File) {
-			const previewRef = ref(
-				storage,
-				extractPath(originalData.preview, "previews")
-			);
-
-			deleteObject(previewRef)
-				.then(() => {
-					console.log("Preview Deleted");
-				})
-				.catch((err) => {
-					console.log(err);
-				});
-
-			// upload new preview
-			const newFileName = `${
-				formData.title
-			}_${Date.now()}.${formData.preview.name.split(".").pop()}`;
-			const file = formData.preview;
-			const storageRef = ref(storage, `previews/${newFileName}`);
-			uploadBytes(storageRef, file)
-				.then(() => {
-					getDownloadURL(storageRef).then((url) => {
-						statelessFormData.preview = url;
-						apiCall(statelessFormData);
-					});
-				})
-				.catch((err) => {
-					console.log(err);
-				});
-		}
+		
+		await apiCall(statelessFormData);
 	};
 
 	const handleFile = (e) => {

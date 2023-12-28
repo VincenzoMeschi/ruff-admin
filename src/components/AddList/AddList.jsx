@@ -46,7 +46,7 @@ const AddList = (props) => {
 			},
 		};
 
-		const baseURL = "http://localhost:8080/api/movies";
+		const baseURL = "https://api.rufftv.com/api/movies";
 
 		const getMovies = async () => {
 			try {
@@ -69,7 +69,7 @@ const AddList = (props) => {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
-		const baseURL = "http://localhost:8080/api/lists";
+		const baseURL = "https://api.rufftv.com/api/lists";
 		const config = {
 			headers: {
 				authorization: window.localStorage.getItem("authorization"),

@@ -10,7 +10,7 @@ import Login from "./pages/Login/Login";
 function App() {
 	return (
 		<div className="App">
-			<Router basename="/admin">
+			<Router basename="/">
 				<Routes>
 					<Route path="/login" element={<Login />} />
 					<Route element={<PrivateRoutes />}>

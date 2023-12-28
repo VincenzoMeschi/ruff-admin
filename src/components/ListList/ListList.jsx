@@ -6,7 +6,7 @@ import axios from "axios";
 import Loading from "../../pages/Loading/Loading";
 import ListEdit from "../ListEdit/ListEdit";
 
-const baseURL = "http://localhost:8080/api/lists";
+const baseURL = "https://api.rufftv.com/api/lists";
 
 const config = {
 	headers: {
@@ -45,7 +45,7 @@ const ListList = (props) => {
 			try {
 				setFetchingData(true);
 				const res = await axios.get(
-					"http://localhost:8080/api/movies",
+					"https://api.rufftv.com/api/movies",
 					config
 				);
 				setAllMovies(res.data);

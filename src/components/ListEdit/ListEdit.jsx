@@ -45,7 +45,7 @@ const ListEdit = (props) => {
 			},
 		};
 
-		const baseURL = "http://localhost:8080/api/movies";
+		const baseURL = "https://api.rufftv.com/api/movies";
 
 		const getMovies = async () => {
 			try {
@@ -65,7 +65,7 @@ const ListEdit = (props) => {
 		const apiCall = () => {
 			setFetchingData(true);
 			const baseURL =
-				"http://localhost:8080/api/lists/find/" + props.editedList;
+				"https://api.rufftv.com/api/lists/find/" + props.editedList;
 			const config = {
 				headers: {
 					authorization: localStorage.getItem("authorization"),
@@ -117,7 +117,7 @@ const ListEdit = (props) => {
 			};
 
 			const baseURL =
-				"http://localhost:8080/api/lists/" + props.editedList;
+				"https://api.rufftv.com/api/lists/" + props.editedList;
 			console.log(data);
 			try {
 				axios.put(baseURL, data, config).then((res) => {

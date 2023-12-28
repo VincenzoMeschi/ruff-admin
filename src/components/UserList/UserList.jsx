@@ -6,7 +6,7 @@ import axios from "axios";
 import UserEdit from "../UserEdit/UserEdit";
 import Loading from "../../pages/Loading/Loading";
 
-const baseURL = "http://localhost:8080/api/users";
+const baseURL = "https://api.rufftv.com/api/users";
 
 const config = {
 	headers: {

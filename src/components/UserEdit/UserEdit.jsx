@@ -1,12 +1,5 @@
 import "./userEdit.scss";
 import { useEffect, useState } from "react";
-import {
-	getDownloadURL,
-	getStorage,
-	ref,
-	uploadBytes,
-	deleteObject,
-} from "firebase/storage";
 import axios from "axios";
 import Loading from "../../pages/Loading/Loading";
 
@@ -25,7 +18,7 @@ const UserEdit = (props) => {
 		const apiCall = () => {
 			setFetchingData(true);
 			const baseURL =
-				"http://localhost:8080/api/users/find/" + props.editedUser;
+				"https://api.rufftv.com/api/users/find/" + props.editedUser;
 			const config = {
 				headers: {
 					authorization: localStorage.getItem("authorization"),
@@ -48,7 +41,6 @@ const UserEdit = (props) => {
 					.then(() => setFetchingData(false));
 			} catch (err) {
 				setFetchingData(false);
-				console.log("YOU CANT DO THAT");
 			}
 		};
 
@@ -65,33 +57,6 @@ const UserEdit = (props) => {
 		return <Loading />;
 	}
 
-	const extractImagePath = (url) => {
-		const domain = "https://firebasestorage.googleapis.com/v0/b/";
-		const queryParamsIndex = url.indexOf("?");
-		const bucketPathIndex = url.indexOf("/o/");
-
-		if (
-			url.startsWith(domain) &&
-			queryParamsIndex !== -1 &&
-			bucketPathIndex !== -1
-		) {
-			const bucketName = url.slice(domain.length, bucketPathIndex);
-			let fileName = decodeURIComponent(
-				url.slice(bucketPathIndex + 3, queryParamsIndex)
-			);
-
-			// Ensure 'user_images/' is only added once
-			const folderPath = "user_images/";
-			if (!fileName.startsWith(folderPath)) {
-				fileName = folderPath + fileName;
-			}
-
-			return `gs://${bucketName}/${fileName}`;
-		} else {
-			throw new Error("Invalid Firebase Storage URL");
-		}
-	};
-
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setFetchingData(true);
@@ -105,7 +70,7 @@ const UserEdit = (props) => {
 
 		const apiCall = async (data) => {
 			const baseURL =
-				"http://localhost:8080/api/users/" + props.editedUser;
+				"https://api.rufftv.com/api/users/" + props.editedUser;
 			const config = {
 				headers: {
 					authorization: window.localStorage.getItem("authorization"),
@@ -125,41 +90,53 @@ const UserEdit = (props) => {
 			return;
 		};
 
-		const storage = getStorage();
 		if (formData.profilePic instanceof File) {
-			// Get old profile pic and delete from storage
-			if (!originalData.profilePic.includes("https://ui-avatars.com")) {
-				const imgRef = ref(
-					storage,
-					extractImagePath(originalData.profilePic)
+			// If username has changed, delete old profilePic
+			if (
+				statelessFormData.username &&
+				!originalData.profilePic.includes("https://ui-avatars.com/api/")
+			) {
+				// get the filetype from profilePic url (split from the last occurace of ".")
+				const lastIndex = originalData.profilePic.lastIndexOf(".");
+
+				const deleteURL = await axios.get(
+					`https://api.rufftv.com/api/auth/s3/delete/profile_images/${originalData.profilePic.substr(
+						lastIndex + 1
+					)}`
 				);
 
-				deleteObject(imgRef)
-					.then(() => {
-						console.log("Deleted old profile pic");
-					})
-					.catch((err) => {
-						console.log(err);
-					});
+				await axios.delete(deleteURL, {
+					headers: {
+						"Content-Type": formData.profilePic.type,
+						"authorization":
+							window.localStorage.getItem("authorization"),
+					},
+				});
 			}
 
-			// Upload new profile pic
-			const newFileName = `${
+			// Get Secure URL from Server
+
+			const uploadURL = await axios.get(
+				`https://api.rufftv.com/api/auth/s3/url/profile_images/${
+					formData.username
+				}.${formData.profilePic.type.split("/")[1]}`
+			);
+
+			// Upload Image to S3
+			await axios.put(uploadURL.data, formData.profilePic, {
+				headers: {
+					"Content-Type": formData.profilePic.type,
+					"authorization":
+						window.localStorage.getItem("authorization"),
+				},
+			});
+
+			// Update profilePic in statelessFormData
+			statelessFormData.profilePic = `https://d34me5uwzdrtz6.cloudfront.net/profile_images/${
 				formData.username
-			}_${Date.now()}.${formData.profilePic.name.split(".").pop()}`;
-			const file = formData.profilePic;
-			const storageRef = ref(storage, `user_images/${newFileName}`);
-			uploadBytes(storageRef, file)
-				.then(() => {
-					getDownloadURL(storageRef).then((url) => {
-						statelessFormData.profilePic = url;
-						apiCall(statelessFormData);
-					});
-				})
-				.catch((err) => console.log(err));
-		} else {
-			apiCall(statelessFormData);
+			}.${formData.profilePic.type.split("/")[1]}`;
 		}
+		await apiCall(statelessFormData);
 	};
 
 	const handleFile = (e) => {

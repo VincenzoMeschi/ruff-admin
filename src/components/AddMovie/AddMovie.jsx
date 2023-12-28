@@ -1,6 +1,5 @@
 import "./addmovie.scss";
 import { useState } from "react";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import axios from "axios";
 import Loading from "../../pages/Loading/Loading";
 
@@ -18,7 +17,7 @@ const AddMovie = (props) => {
 	});
 	const [fetchingData, setFetchingData] = useState(false);
 
-	const baseURL = "http://localhost:8080/api/movies/";
+	const baseURL = "https://api.rufftv.com/api/movies/";
 
 	if (fetchingData) {
 		return <Loading />;
@@ -59,79 +58,68 @@ const AddMovie = (props) => {
 		};
 
 		if (formData.img instanceof File) {
-			const newFileName = `${
-				formData.title
-			}_${Date.now()}.${formData.img.name.split(".").pop()}`;
-			const file = formData.img;
-			const storage = getStorage();
-			const storageRef = ref(storage, `posters/${newFileName}`);
-
-			uploadBytes(storageRef, file)
+			// Get Secure URL from Server
+			const uploadURL = await axios.get(
+				`https://api.rufftv.com/api/auth/s3/url/movie_posters/${
+					statelessFormData.title
+				}.${statelessFormData.img.type.split("/")[1]}`,
+				{
+					headers: {
+						authorization:
+							window.localStorage.getItem("authorization"),
+					},
+				}
+			);
+			// PUT image to S3
+			await axios
+				.put(uploadURL, statelessFormData.img, {
+					headers: {
+						"Content-Type": statelessFormData.img.type,
+					},
+				})
 				.then(() => {
-					getDownloadURL(storageRef).then((url) => {
-						statelessFormData.img = url;
-						if (formData.video instanceof File) {
-							const newFileName = `${
-								formData.title
-							}_${Date.now()}.${formData.video.name
-								.split(".")
-								.pop()}`;
-							const file = formData.video;
-							const storageRef2 = ref(
-								storage,
-								`movies/${newFileName}`
-							);
-
-							uploadBytes(storageRef2, file)
-								.then(() => {
-									getDownloadURL(storageRef2).then((url) => {
-										statelessFormData.video = url;
-										if (formData.preview instanceof File) {
-											const newFileName = `${
-												formData.title
-											}_${Date.now()}.${formData.preview.name
-												.split(".")
-												.pop()}`;
-											const file = formData.preview;
-											const storageRef3 = ref(
-												storage,
-												`previews/${newFileName}`
-											);
-
-											uploadBytes(storageRef3, file)
-												.then(() => {
-													getDownloadURL(
-														storageRef3
-													).then((url) => {
-														statelessFormData.preview =
-															url;
-														apiCall(
-															statelessFormData
-														).then((res) =>
-															props.onNewMovieAdded(
-																res.data
-															)
-														);
-													});
-												})
-												.catch((err) => {
-													console.log(err);
-												});
-										}
-									});
-								})
-								.catch((err) => {
-									console.log(err);
-								});
-						} else {
-							apiCall(statelessFormData);
-						}
-					});
+					// POST new Image CDN URL to server
+					statelessFormData.img = `https://d34me5uwzdrtz6.cloudfront.net/movie_posters/${
+						statelessFormData.title
+					}.${statelessFormData.img.type.split("/")[1]}`;
 				})
 				.catch((err) => {
-					console.log(err);
+					console.log("Error during PUT: " + err);
 				});
 		}
+
+		if (formData.video instanceof File) {
+			// Get Secure URL from Server
+			const uploadURL = await axios.get(
+				`https://api.rufftv.com/api/auth/s3/url/movies/${
+					statelessFormData.title
+				}.${statelessFormData.video.type.split("/")[1]}`,
+				{
+					headers: {
+						authorization:
+							window.localStorage.getItem("authorization"),
+					},
+				}
+			);
+			// PUT image to S3
+			await axios
+				.put(uploadURL, statelessFormData.video, {
+					headers: {
+						"Content-Type": statelessFormData.video.type,
+					},
+				})
+				.then(() => {
+					// POST new Image CDN URL to server
+					statelessFormData.video = `https://d34me5uwzdrtz6.cloudfront.net/movies/${
+						statelessFormData.title
+					}.${statelessFormData.video.type.split("/")[1]}`;
+				})
+				.catch((err) => {
+					console.log("Error during PUT: " + err);
+				});
+		}
+
+		await apiCall(statelessFormData);
 	};
 
 	const handleFile = (e) => {

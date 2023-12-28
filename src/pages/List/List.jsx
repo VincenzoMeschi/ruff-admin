@@ -20,19 +20,19 @@ const List = () => {
 			},
 		};
 		try {
-			setFetchingData(true)
-			axios.delete(`http://localhost:8080/api/lists/find/${id}`, config);
+			setFetchingData(true);
+			axios.delete(`https://api.rufftv.com/api/lists/find/${id}`, config);
 			setNewLists((prevLists) =>
 				prevLists.filter((list) => list._id !== id)
 			);
-			setFetchingData(false)
+			setFetchingData(false);
 		} catch (err) {
 			console.log(err.response.data);
-			setFetchingData(false)
+			setFetchingData(false);
 		}
 	};
 
-if (fetchingData) {
+	if (fetchingData) {
 		return <Loading />;
 	}
 
