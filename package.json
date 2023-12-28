@@ -53,6 +53,7 @@
 		]
 	},
 	"devDependencies": {
+		"@babel/plugin-proposal-private-property-in-object": "^7.21.11",
 		"@faker-js/faker": "^8.3.1",
 		"dotenv": "^16.3.1",
 		"path-browserify": "^1.0.1",

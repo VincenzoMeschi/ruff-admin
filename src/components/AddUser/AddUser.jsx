@@ -102,6 +102,10 @@ const AddUser = (props) => {
 		}
 	};
 
+	if (fetchingData) {
+		return <Loading />;
+	}
+
 	return (
 		<div className="addUserBlock">
 			<h2>Add New User</h2>
