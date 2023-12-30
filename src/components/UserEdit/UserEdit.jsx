@@ -123,7 +123,7 @@ const UserEdit = (props) => {
 			);
 
 			// Upload Image to S3
-			await axios.put(uploadURL.data, formData.profilePic, {
+			await axios.put(uploadURL, formData.profilePic, {
 				headers: {
 					"Content-Type": formData.profilePic.type,
 					"authorization":

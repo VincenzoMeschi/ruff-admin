@@ -128,7 +128,7 @@ const MovieEdit = (props) => {
 			);
 
 			// Upload Image to S3
-			await axios.put(uploadURL.data, formData.img, {
+			await axios.put(uploadURL, formData.img, {
 				headers: {
 					"Content-Type": formData.img.type,
 					"authorization":
@@ -172,7 +172,7 @@ const MovieEdit = (props) => {
 			);
 
 			// Upload Image to S3
-			await axios.put(uploadURL.data, formData.video, {
+			await axios.put(uploadURL, formData.video, {
 				headers: {
 					"Content-Type": formData.video.type,
 					"authorization":
@@ -186,7 +186,6 @@ const MovieEdit = (props) => {
 			}.${formData.video.type.split("/")[1]}`;
 		}
 
-		
 		await apiCall(statelessFormData);
 	};
 
