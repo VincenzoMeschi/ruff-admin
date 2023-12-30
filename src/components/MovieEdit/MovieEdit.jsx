@@ -134,11 +134,20 @@ const MovieEdit = (props) => {
 			);
 
 			// Upload Image to S3
-			await axios.put(uploadURL, formData.img, {
-				headers: {
-					"Content-Type": formData.img.type,
-				},
-			});
+			await axios
+				.put(uploadURL, formData.img, {
+					headers: {
+						"Content-Type": formData.img.type,
+					},
+				})
+				.then(() => {
+					console.log(
+						"Image Uploaded! - " +
+							formData.img.name +
+							" - " +
+							formData.img.type
+					);
+				});
 
 			// Update img in statelessFormData
 			statelessFormData.img = `https://d34me5uwzdrtz6.cloudfront.net/movie_posters/${
