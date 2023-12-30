@@ -128,7 +128,7 @@ const MovieEdit = (props) => {
 					}.${formData.img.type.split("/")[1]}`
 				)
 				.then(() =>
-					console.log(uploadURL + " uploadURL &&& " + formData.img)
+					console.log(uploadURL + " uploadURL &&& " + formData.img.type)
 				)
 				.catch((err) => console.log(err + formData.img));
 
