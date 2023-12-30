@@ -121,23 +121,22 @@ const MovieEdit = (props) => {
 
 			// Get Secure URL from Server
 
-			const uploadURL = await axios
-				.get(
-					`https://api.rufftv.com/api/auth/s3/url/movie_posters/${
-						formData.title
-					}.${formData.img.type.split("/")[1]}`
-				)
-				.then(() =>
-					console.log(uploadURL + " uploadURL &&& " + formData.img.type)
-				)
-				.catch((err) => console.log(err + formData.img));
+			const uploadURL = await axios.get(
+				`https://api.rufftv.com/api/auth/s3/url/movie_posters/${
+					formData.title
+				}.${formData.img.type.split("/")[1]}`,
+				{
+					headers: {
+						authorization:
+							window.localStorage.getItem("authorization"),
+					},
+				}
+			);
 
 			// Upload Image to S3
 			await axios.put(uploadURL, formData.img, {
 				headers: {
 					"Content-Type": formData.img.type,
-					"authorization":
-						window.localStorage.getItem("authorization"),
 				},
 			});
 
