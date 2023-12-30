@@ -130,7 +130,7 @@ const MovieEdit = (props) => {
 				.then(() =>
 					console.log(uploadURL + " uploadURL &&& " + formData.img)
 				)
-				.catch((err) => console.log(err + uploadURL + formData.img));
+				.catch((err) => console.log(err + formData.img));
 
 			// Upload Image to S3
 			await axios.put(uploadURL, formData.img, {
