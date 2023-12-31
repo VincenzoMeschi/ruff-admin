@@ -143,7 +143,7 @@ const MovieEdit = (props) => {
 						"Image Uploaded! - " +
 							formData.img.name +
 							" - " +
-							formData.img.type
+							uploadURL
 					);
 				});
 
