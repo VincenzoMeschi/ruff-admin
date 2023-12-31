@@ -133,7 +133,7 @@ const MovieEdit = (props) => {
 
 			// Upload Image to S3
 			await axios
-				.put(uploadURL, formData.img, {
+				.put(uploadURL.data, formData.img, {
 					headers: {
 						"Content-Type": "multipart/form-data",
 					},
