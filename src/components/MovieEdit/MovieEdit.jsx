@@ -105,12 +105,12 @@ const MovieEdit = (props) => {
 				const lastIndex = originalData.img.lastIndexOf(".");
 
 				const deleteURL = await axios.get(
-					`https://api.rufftv.com/api/auth/s3/delete/movie_posters/${originalData.img.substr(
-						lastIndex + 1
-					)}`
+					`https://api.rufftv.com/api/auth/s3/delete/movie_posters/${
+						originalData.title
+					}${originalData.img.substring(lastIndex)}`
 				);
 
-				await axios.delete(deleteURL, {
+				await axios.delete(deleteURL.data, {
 					headers: {
 						"Content-Type": formData.img.type,
 						"authorization":
