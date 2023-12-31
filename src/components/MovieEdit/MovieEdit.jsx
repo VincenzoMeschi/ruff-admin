@@ -140,11 +140,9 @@ const MovieEdit = (props) => {
 				})
 				.then(() => {
 					console.log(
-						"Image Uploaded! - " +
-							formData.img.name +
-							" - " +
-							uploadURL
+						"Image Uploaded! - " + formData.img.name + " - "
 					);
+					console.log(uploadURL);
 				});
 
 			// Update img in statelessFormData
