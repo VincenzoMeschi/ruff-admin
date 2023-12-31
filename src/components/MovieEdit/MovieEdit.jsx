@@ -148,9 +148,7 @@ const MovieEdit = (props) => {
 				});
 
 			// Update img in statelessFormData
-			statelessFormData.img = `https://d34me5uwzdrtz6.cloudfront.net/movie_posters/${
-				formData.title
-			}.${formData.img.type.split("/")[1]}`;
+			statelessFormData.img = `https://d34me5uwzdrtz6.cloudfront.net/movie_posters/${formData.img.name}`;
 		}
 
 		if (formData.video instanceof File) {
