@@ -122,7 +122,9 @@ const MovieEdit = (props) => {
 			// Get Secure URL from Server
 
 			const uploadURL = await axios.get(
-				`https://api.rufftv.com/api/auth/s3/url/movie_posters/${formData.img.name}`,
+				`https://api.rufftv.com/api/auth/s3/url/movie_posters/${
+					formData.title
+				}.${formData.img.name.split(".")[1]}`,
 				{
 					headers: {
 						authorization:
@@ -132,21 +134,16 @@ const MovieEdit = (props) => {
 			);
 
 			// Upload Image to S3
-			await axios
-				.put(uploadURL.data, formData.img, {
-					headers: {
-						"Content-Type": "multipart/form-data",
-					},
-				})
-				.then(() => {
-					console.log(
-						"Image Uploaded! - " + formData.img.name + " - "
-					);
-					console.log(uploadURL);
-				});
+			await axios.put(uploadURL.data, formData.img, {
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			});
 
 			// Update img in statelessFormData
-			statelessFormData.img = `https://d34me5uwzdrtz6.cloudfront.net/movie_posters/${formData.img.name}`;
+			statelessFormData.img = `https://d34me5uwzdrtz6.cloudfront.net/movie_posters/${
+				formData.title
+			}.${formData.img.name.split(".")[1]}`;
 		}
 
 		if (formData.video instanceof File) {
