@@ -122,9 +122,7 @@ const MovieEdit = (props) => {
 			// Get Secure URL from Server
 
 			const uploadURL = await axios.get(
-				`https://api.rufftv.com/api/auth/s3/url/movie_posters/${
-					formData.title
-				}.${formData.img.type.split("/")[1]}`,
+				`https://api.rufftv.com/api/auth/s3/url/movie_posters/${formData.img.name}`,
 				{
 					headers: {
 						authorization:
