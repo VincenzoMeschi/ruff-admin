@@ -137,7 +137,7 @@ const MovieEdit = (props) => {
 			await axios
 				.put(uploadURL, formData.img, {
 					headers: {
-						"Content-Type": formData.img.type,
+						"Content-Type": "multipart/form-data",
 					},
 				})
 				.then(() => {
