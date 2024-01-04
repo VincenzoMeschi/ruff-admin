@@ -58,23 +58,19 @@ const AddUser = (props) => {
 			const uploadURL = await axios.get(
 				`https://api.rufftv.com/api/auth/s3/url/profile_images/${
 					statelessFormData.username
-				}.${statelessFormData.profilePic.type.split("/")[1]}`
+				}.${statelessFormData.profilePic.name.split(".")[1]}`
 			);
-			// PUT image to S3
-			await axios
-				.put(uploadURL, statelessFormData.profilePic, {
-					headers: {
-						"Content-Type": statelessFormData.profilePic.type,
-						"authorization":
-							window.localStorage.getItem("authorization"),
-					},
-				})
-				.then(() => {
-					// POST new Image CDN URL to server
-					statelessFormData.profilePic = `https://d34me5uwzdrtz6.cloudfront.net/profile_images/${
-						statelessFormData.username
-					}.${statelessFormData.profilePic.type.split("/")[1]}`;
-				});
+			// Upload Image to S3
+			await axios.put(uploadURL.data, formData.profilePic, {
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			});
+
+			// Update img in statelessFormData
+			statelessFormData.profilePic = `https://d34me5uwzdrtz6.cloudfront.net/profile_images/${
+				formData.username
+			}.${formData.profilePic.name.split(".")[1]}`;
 
 			await apiCall(statelessFormData);
 		} else {

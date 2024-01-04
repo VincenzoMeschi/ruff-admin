@@ -107,14 +107,18 @@ const MovieEdit = (props) => {
 				const deleteURL = await axios.get(
 					`https://api.rufftv.com/api/auth/s3/delete/movie_posters/${
 						originalData.title
-					}${originalData.img.substring(lastIndex)}`
+					}.${originalData.img.substring(lastIndex + 1)}`,
+					{
+						headers: {
+							authorization:
+								window.localStorage.getItem("authorization"),
+						},
+					}
 				);
 
 				await axios.delete(deleteURL.data, {
 					headers: {
-						"Content-Type": formData.img.type,
-						"authorization":
-							window.localStorage.getItem("authorization"),
+						"Content-Type": "multipart/form-data",
 					},
 				});
 			}
@@ -153,16 +157,20 @@ const MovieEdit = (props) => {
 				const lastIndex = originalData.video.lastIndexOf(".");
 
 				const deleteURL = await axios.get(
-					`https://api.rufftv.com/api/auth/s3/delete/movies/${originalData.video.substr(
-						lastIndex + 1
-					)}`
+					`https://api.rufftv.com/api/auth/s3/delete/movies/${
+						originalData.title
+					}.${originalData.img.substring(lastIndex + 1)}`,
+					{
+						headers: {
+							authorization:
+								window.localStorage.getItem("authorization"),
+						},
+					}
 				);
 
-				await axios.delete(deleteURL, {
+				await axios.delete(deleteURL.data, {
 					headers: {
 						"Content-Type": formData.video.type,
-						"authorization":
-							window.localStorage.getItem("authorization"),
 					},
 				});
 			}
@@ -172,22 +180,26 @@ const MovieEdit = (props) => {
 			const uploadURL = await axios.get(
 				`https://api.rufftv.com/api/auth/s3/url/movies/${
 					formData.title
-				}.${formData.video.type.split("/")[1]}`
+				}.${formData.video.name.split(".")[1]}`,
+				{
+					headers: {
+						authorization:
+							window.localStorage.getItem("authorization"),
+					},
+				}
 			);
 
 			// Upload Image to S3
-			await axios.put(uploadURL, formData.video, {
+			await axios.put(uploadURL.data, formData.video, {
 				headers: {
 					"Content-Type": formData.video.type,
-					"authorization":
-						window.localStorage.getItem("authorization"),
 				},
 			});
 
 			// Update video in statelessFormData
 			statelessFormData.video = `https://d34me5uwzdrtz6.cloudfront.net/movies/full_trailer/${
 				formData.title
-			}.${formData.video.type.split("/")[1]}`;
+			}.${formData.video.name.split(".")[1]}`;
 		}
 
 		await apiCall(statelessFormData);

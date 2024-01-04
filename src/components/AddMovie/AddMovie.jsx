@@ -61,8 +61,8 @@ const AddMovie = (props) => {
 			// Get Secure URL from Server
 			const uploadURL = await axios.get(
 				`https://api.rufftv.com/api/auth/s3/url/movie_posters/${
-					statelessFormData.title
-				}.${statelessFormData.img.type.split("/")[1]}`,
+					formData.title
+				}.${formData.img.name.split(".")[1]}`,
 				{
 					headers: {
 						authorization:
@@ -70,30 +70,25 @@ const AddMovie = (props) => {
 					},
 				}
 			);
-			// PUT image to S3
-			await axios
-				.put(uploadURL, statelessFormData.img, {
-					headers: {
-						"Content-Type": statelessFormData.img.type,
-					},
-				})
-				.then(() => {
-					// POST new Image CDN URL to server
-					statelessFormData.img = `https://d34me5uwzdrtz6.cloudfront.net/movie_posters/${
-						statelessFormData.title
-					}.${statelessFormData.img.type.split("/")[1]}`;
-				})
-				.catch((err) => {
-					console.log("Error during PUT: " + err);
-				});
+			// Upload Image to S3
+			await axios.put(uploadURL.data, formData.img, {
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			});
+
+			// Update img in statelessFormData
+			statelessFormData.img = `https://d34me5uwzdrtz6.cloudfront.net/movie_posters/${
+				formData.title
+			}.${formData.img.name.split(".")[1]}`;
 		}
 
 		if (formData.video instanceof File) {
 			// Get Secure URL from Server
 			const uploadURL = await axios.get(
 				`https://api.rufftv.com/api/auth/s3/url/movies/${
-					statelessFormData.title
-				}.${statelessFormData.video.type.split("/")[1]}`,
+					formData.title
+				}.${formData.video.name.split(".")[1]}`,
 				{
 					headers: {
 						authorization:
@@ -101,22 +96,17 @@ const AddMovie = (props) => {
 					},
 				}
 			);
-			// PUT image to S3
-			await axios
-				.put(uploadURL, statelessFormData.video, {
-					headers: {
-						"Content-Type": statelessFormData.video.type,
-					},
-				})
-				.then(() => {
-					// POST new Image CDN URL to server
-					statelessFormData.video = `https://d34me5uwzdrtz6.cloudfront.net/movies/${
-						statelessFormData.title
-					}.${statelessFormData.video.type.split("/")[1]}`;
-				})
-				.catch((err) => {
-					console.log("Error during PUT: " + err);
-				});
+			// Upload Image to S3
+			await axios.put(uploadURL.data, formData.video, {
+				headers: {
+					"Content-Type": formData.video.type,
+				},
+			});
+
+			// Update video in statelessFormData
+			statelessFormData.video = `https://d34me5uwzdrtz6.cloudfront.net/movies/full_trailer/${
+				formData.title
+			}.${formData.video.name.split(".")[1]}`;
 		}
 
 		await apiCall(statelessFormData);

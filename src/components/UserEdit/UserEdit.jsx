@@ -100,16 +100,20 @@ const UserEdit = (props) => {
 				const lastIndex = originalData.profilePic.lastIndexOf(".");
 
 				const deleteURL = await axios.get(
-					`https://api.rufftv.com/api/auth/s3/delete/profile_images/${originalData.profilePic.substr(
-						lastIndex + 1
-					)}`
+					`https://api.rufftv.com/api/auth/s3/delete/profile_images/${
+						originalData.username
+					}.${originalData.profilePic.substring(lastIndex + 1)}`,
+					{
+						headers: {
+							authorization:
+								window.localStorage.getItem("authorization"),
+						},
+					}
 				);
 
 				await axios.delete(deleteURL, {
 					headers: {
-						"Content-Type": formData.profilePic.type,
-						"authorization":
-							window.localStorage.getItem("authorization"),
+						"Content-Type": "multipart/form-data",
 					},
 				});
 			}
@@ -119,22 +123,20 @@ const UserEdit = (props) => {
 			const uploadURL = await axios.get(
 				`https://api.rufftv.com/api/auth/s3/url/profile_images/${
 					formData.username
-				}.${formData.profilePic.type.split("/")[1]}`
+				}.${formData.profilePic.name.split(".")[1]}`
 			);
 
 			// Upload Image to S3
-			await axios.put(uploadURL, formData.profilePic, {
+			await axios.put(uploadURL.data, formData.profilePic, {
 				headers: {
 					"Content-Type": formData.profilePic.type,
-					"authorization":
-						window.localStorage.getItem("authorization"),
 				},
 			});
 
 			// Update profilePic in statelessFormData
 			statelessFormData.profilePic = `https://d34me5uwzdrtz6.cloudfront.net/profile_images/${
 				formData.username
-			}.${formData.profilePic.type.split("/")[1]}`;
+			}.${formData.profilePic.name.split(".")[1]}`;
 		}
 		await apiCall(statelessFormData);
 	};
