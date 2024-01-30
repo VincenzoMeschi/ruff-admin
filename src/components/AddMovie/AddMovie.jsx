@@ -57,66 +57,134 @@ const AddMovie = (props) => {
 			}
 		};
 
-		if (formData.img instanceof File) {
-			// Get Secure URL from Server
-			const uploadURL = await axios.get(
-				`https://api.rufftv.com/api/auth/s3/url/movie_posters/${
-					formData.title
-				}.${formData.img.name.split(".")[1]}`,
-				{
-					headers: {
-						authorization:
-							window.localStorage.getItem("authorization"),
-					},
-				}
-			);
-			// Upload Image to S3
-			await axios.put(uploadURL.data, formData.img, {
-				headers: {
-					"Content-Type": "multipart/form-data",
-				},
-			});
-
-			// Update img in statelessFormData
-			statelessFormData.img = `https://d34me5uwzdrtz6.cloudfront.net/movie_posters/${
-				formData.title
-			}.${formData.img.name.split(".")[1]}`;
-		}
-
-		if (formData.video instanceof File) {
-			// Get Secure URL from Server
-			await axios.get(
-				`https://api.rufftv.com/api/auth/s3/url/movies/${
-					formData.title
-				}.${formData.video.name.split(".")[1]}`,
-				{
-					headers: {
-						authorization:
-							window.localStorage.getItem("authorization"),
-					},
-				}
-			).then((res) => {
-				axios.put(res.data, formData.video, {
-					headers: {
-						"Content-Type": "multipart/form-data",
-					},
-				}).then((res) => {
-					alert(res)
-					setFetchingData(false)
-				}).catch((err) => {
-					alert(err)
-					setFetchingData(false)
+		 // Image upload logic
+		const handleImageUpload = () => {
+			if (formData.img instanceof File) {
+				const uploadURL = axios.get(
+					`https://api.rufftv.com/api/auth/s3/url/movie_posters/${
+						formData.title
+					}.${formData.img.name.split(".")[1]}`,
+					{
+						headers: {
+							authorization:
+								window.localStorage.getItem("authorization"),
+						},
+					}
+				);
+	
+				return uploadURL.then((response) => {
+					// Upload Image to S3
+					return axios.put(response.data, formData.img, {
+						headers: {
+							"Content-Type": "multipart/form-data",
+						},
+					});
+				}).then(() => {
+					// Update img in statelessFormData
+					statelessFormData.img = `https://d34me5uwzdrtz6.cloudfront.net/movie_posters/${
+						formData.title
+					}.${formData.img.name.split(".")[1]}`;
+				}).catch((error) => {
+					console.log("Error during image upload: " + error);
+					// Handle errors or display appropriate messages to the user
 				});
-			}).catch((err) => {
-				alert(err)
-				setFetchingData(false)
-			});
+			} else {
+				return Promise.resolve(); // No image to upload, resolve immediately
+			}
+		};
+	
+		// Video upload logic
+		const handleVideoUpload = () => {
+			if (formData.video instanceof File) {
+				const uploadURL = axios.get(
+					`https://api.rufftv.com/api/auth/s3/url/movies/${
+						formData.title
+					}.${formData.video.name.split(".")[1]}`,
+					{
+						headers: {
+							authorization:
+								window.localStorage.getItem("authorization"),
+						},
+					}
+				);
+	
+				return uploadURL.then((response) => {
+					// Upload Video to S3
+					return axios.put(response.data, formData.video, {
+						headers: {
+							"Content-Type": "multipart/form-data",
+						},
+					});
+				}).then(() => {
+					// Update video in statelessFormData
+					statelessFormData.video = `https://d34me5uwzdrtz6.cloudfront.net/movies/full_trailer/${
+						formData.title
+					}.${formData.video.name.split(".")[1]}`;
+				}).catch((error) => {
+					console.log("Error during video upload: " + error);
+					// Handle errors or display appropriate messages to the user
+				});
+			} else {
+				return Promise.resolve(); // No video to upload, resolve immediately
+			}
+		};
 
-			// Update video in statelessFormData
-			statelessFormData.video = `https://d34me5uwzdrtz6.cloudfront.net/movies/full_trailer/${
-				formData.title
-			}.${formData.video.name.split(".")[1]}`;
-		}
+		// Chain the promises
+		handleImageUpload()
+        .then(() => handleVideoUpload())
+        .then(() => apiCall(statelessFormData));
+
+		// if (formData.img instanceof File) {
+		// 	// Get Secure URL from Server
+		// 	const uploadURL = await axios.get(
+		// 		`https://api.rufftv.com/api/auth/s3/url/movie_posters/${
+		// 			formData.title
+		// 		}.${formData.img.name.split(".")[1]}`,
+		// 		{
+		// 			headers: {
+		// 				authorization:
+		// 					window.localStorage.getItem("authorization"),
+		// 			},
+		// 		}
+		// 	);
+		// 	// Upload Image to S3
+		// 	await axios.put(uploadURL.data, formData.img, {
+		// 		headers: {
+		// 			"Content-Type": "multipart/form-data",
+		// 		},
+		// 	});
+
+		// 	// Update img in statelessFormData
+		// 	statelessFormData.img = `https://d34me5uwzdrtz6.cloudfront.net/movie_posters/${
+		// 		formData.title
+		// 	}.${formData.img.name.split(".")[1]}`;
+		// }
+
+		// if (formData.video instanceof File) {
+		// 	// Get Secure URL from Server
+		// 	const uploadURL = await axios.get(
+		// 		`https://api.rufftv.com/api/auth/s3/url/movies/${
+		// 			formData.title
+		// 		}.${formData.video.name.split(".")[1]}`,
+		// 		{
+		// 			headers: {
+		// 				authorization:
+		// 					window.localStorage.getItem("authorization"),
+		// 			},
+		// 		}
+		// 	);
+		// 	// Upload Video to S3
+		// 	await axios.put(uploadURL.data, formData.video, {
+		// 		headers: {
+		// 			"Content-Type": "multipart/form-data",
+		// 		},
+		// 	});
+
+		// 	// Update video in statelessFormData
+		// 	statelessFormData.video = `https://d34me5uwzdrtz6.cloudfront.net/movies/full_trailer/${
+		// 		formData.title
+		// 	}.${formData.video.name.split(".")[1]}`;
+		// }
 
 		await apiCall(statelessFormData);
 	};
