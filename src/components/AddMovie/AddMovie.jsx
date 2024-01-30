@@ -96,20 +96,17 @@ const AddMovie = (props) => {
 					},
 				}
 			).then((res) => {
-				alert(res)
-				setFetchingData(false)
-			}).catch((err) => {
-				alert(err)
-				setFetchingData(false)
-			});
-			// Upload Video to S3
-			await axios.put(uploadURL.data, formData.video, {
-				headers: {
-					"Content-Type": "multipart/form-data",
-				},
-			}).then((res) => {
-				alert(res)
-				setFetchingData(false)
+				axios.put(res.data, formData.video, {
+					headers: {
+						"Content-Type": "multipart/form-data",
+					},
+				}).then((res) => {
+					alert(res)
+					setFetchingData(false)
+				}).catch((err) => {
+					alert(err)
+					setFetchingData(false)
+				});
 			}).catch((err) => {
 				alert(err)
 				setFetchingData(false)
