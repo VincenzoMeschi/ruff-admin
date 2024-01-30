@@ -95,13 +95,13 @@ const AddMovie = (props) => {
 							window.localStorage.getItem("authorization"),
 					},
 				}
-			);
-			// Upload Image to S3
+			).catch((err) => console.log(err));
+			// Upload Video to S3
 			await axios.put(uploadURL.data, formData.video, {
 				headers: {
 					"Content-Type": formData.video.type,
 				},
-			});
+			}).catch((err) => console.log(err));
 
 			// Update video in statelessFormData
 			statelessFormData.video = `https://d34me5uwzdrtz6.cloudfront.net/movies/full_trailer/${
