@@ -170,7 +170,7 @@ const MovieEdit = (props) => {
 
 				await axios.delete(deleteURL.data, {
 					headers: {
-						"Content-Type": formData.video.type,
+						"Content-Type": "multipart/form-data",
 					},
 				});
 			}
@@ -192,7 +192,7 @@ const MovieEdit = (props) => {
 			// Upload Image to S3
 			await axios.put(uploadURL.data, formData.video, {
 				headers: {
-					"Content-Type": formData.video.type,
+					"Content-Type": "multipart/form-data",
 				},
 			});
 

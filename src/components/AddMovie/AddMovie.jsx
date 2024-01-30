@@ -95,13 +95,25 @@ const AddMovie = (props) => {
 							window.localStorage.getItem("authorization"),
 					},
 				}
-			).catch((err) => console.log(err));
+			).then((res) => {
+				alert(res)
+				isFetchingData(false)
+			}).catch((err) => {
+				alert(err)
+				isFetchingData(false)
+			});
 			// Upload Video to S3
 			await axios.put(uploadURL.data, formData.video, {
 				headers: {
 					"Content-Type": "multipart/form-data",
 				},
-			}).catch((err) => console.log(err));
+			}).then((res) => {
+				alert(res)
+				isFetchingData(false)
+			}).catch((err) => {
+				alert(err)
+				isFetchingData(false)
+			});
 
 			// Update video in statelessFormData
 			statelessFormData.video = `https://d34me5uwzdrtz6.cloudfront.net/movies/full_trailer/${
