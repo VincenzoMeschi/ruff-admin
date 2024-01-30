@@ -186,7 +186,7 @@ const AddMovie = (props) => {
 		// 	}.${formData.video.name.split(".")[1]}`;
 		// }
 
-		await apiCall(statelessFormData);
+		// await apiCall(statelessFormData);
 	};
 
 	const handleFile = (e) => {
