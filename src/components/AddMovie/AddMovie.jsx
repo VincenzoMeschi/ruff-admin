@@ -85,7 +85,7 @@ const AddMovie = (props) => {
 
 		if (formData.video instanceof File) {
 			// Get Secure URL from Server
-			const uploadURL = await axios.get(
+			await axios.get(
 				`https://api.rufftv.com/api/auth/s3/url/movies/${
 					formData.title
 				}.${formData.video.name.split(".")[1]}`,
