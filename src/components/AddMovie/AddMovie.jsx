@@ -97,10 +97,10 @@ const AddMovie = (props) => {
 				}
 			).then((res) => {
 				alert(res)
-				isFetchingData(false)
+				setFetchingData(false)
 			}).catch((err) => {
 				alert(err)
-				isFetchingData(false)
+				setFetchingData(false)
 			});
 			// Upload Video to S3
 			await axios.put(uploadURL.data, formData.video, {
@@ -109,10 +109,10 @@ const AddMovie = (props) => {
 				},
 			}).then((res) => {
 				alert(res)
-				isFetchingData(false)
+				setFetchingData(false)
 			}).catch((err) => {
 				alert(err)
-				isFetchingData(false)
+				setFetchingData(false)
 			});
 
 			// Update video in statelessFormData
