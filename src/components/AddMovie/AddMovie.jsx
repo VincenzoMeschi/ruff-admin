@@ -99,7 +99,7 @@ const AddMovie = (props) => {
 			// Upload Video to S3
 			await axios.put(uploadURL.data, formData.video, {
 				headers: {
-					"Content-Type": formData.video.type,
+					"Content-Type": "multipart/form-data",
 				},
 			}).catch((err) => console.log(err));
 
